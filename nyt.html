@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Search</title>
+</head>
+
+<body>
+
+<div id = "topResults">
+</div>
+
+
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready( () => {
+
+            $("#search").on("click", function(event) {
+                    var searchTerms = $("#searchTerms").val().trim();
+                    var numRecords = $("#numRecords").val().trim();
+                    var yStart = $("#yStart").val().trim();
+                    var yEnd = $("#yEnd").val().trim();
+
+                    NYTSearch(searchTerms, numRecords, yStart, yEnd);
+
+
+                });
+
+
+                function NYTSearch(a, b, c, d) {
+
+                	if (!a || !b) {
+                    	throw err;
+                    }
+
+                    var apiStuff = {
+                    	'api-key': "894aa9aea6114b26a447e9413a63b064",
+                            'q': a,
+                    };
+
+                    if (c) {
+
+                    	if (c.length !=8) {
+                    		throw err;
+                    	}
+
+                        apiStuff["begin_date"] = c;
+
+                    }
+
+                    if (d) {
+
+                    	if (d.length !=8) {
+                    		throw err;
+                    	}
+
+                    	apiStuff["end_date"] = d;
+                    }
+
+                    
+               
+
+                    
+                    var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+                    url += '?' + $.param({
+                        apiStuff
+                    });
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                    }).done(function(response) {
+                        console.log(result);
+
+                        for (i = 0; i < b; i++) {
+                        	var newDiv = $("<div>");
+                            var headline = response.docs[i].headline.main;
+                            var authorName = response.docs[i].byline.original;
+                            var section = response.docs[i].multimedia.section_name;
+                            var publishDate = response.docs[i].multimedia.pub_date;
+                            newDiv.append(headline);
+                            newDiv.append(authorName);
+                            newDiv.append(section);
+                            newDiv.append(publishDate);
+
+
+                        }
+
+                        $("#topResults").append(newDiv);
+                        
+
+
+
+                    }).fail(function(err) {
+                        throw err;
+                    });
+
+                }
+
+                NYTSearch("churchill", 5, 20080101, 20120101);
+
+            });
+    </script>
+</body>
+
+</html>
